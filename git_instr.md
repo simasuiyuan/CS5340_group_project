@@ -2,7 +2,7 @@
 
 # Initial setup
 
-## clone reposity
+## clone repository
 ```
 git clone https://github.com/simasuiyuan/CS5340_group_project.git
 cd CS5340_group_project
