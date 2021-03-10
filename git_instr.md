@@ -31,3 +31,11 @@ git commit -m "commit message"
 ```
 git push -u origin developer
 ```
+
+## merge to master (better manage by one person)
+```
+git checkout master
+git merge developer
+git push  -u origin master
+```
+![image info](./assets/git/merge.PNG)
