@@ -4,6 +4,7 @@ Inputs:
     1. model: 
     The trained BN model with CPD filled up.
     The model contains all the observed variables and the variable to predict.
+    
     2. observed_data: 
     The discretized observed data in the form of panda data frame.
     Each row is a data point.
@@ -15,3 +16,17 @@ Output:
 '''
 def infer_with_model(model, observed_data):
     return prediction
+    
+'''
+Inputs:
+    1. prediction:
+    The predicted categorical value of the unobserved variable.
+    
+    2.     
+Output:
+    1. projection:
+    
+'''
+
+def categorical_prediction_to_projection(prediction):
+    return projection
