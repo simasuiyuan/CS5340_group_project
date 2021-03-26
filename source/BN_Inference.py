@@ -9,12 +9,16 @@ Inputs:
     The discretized evidence data in the form of panda data frame.
     Each row is a data point.
     The columns are the evidence variables. 
+    
+    3. to_predict
+    The list of variables to predict as a list of strings.
+    
 Output:
     prediction:
     The predicted discrete category of the variable to predict based on the evidence.
 
 '''
-def infer_with_model(model, evidence_data, variable_to_predict):
+def infer_with_model(model, evidence_data, to_predict):
     return prediction
     
 '''
