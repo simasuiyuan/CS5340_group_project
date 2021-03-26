@@ -3,24 +3,24 @@
 Inputs:
     1. model: 
     The trained BN model with CPD filled up.
-    The model contains all the observed variables and the variable to predict.
+    The variable to predict is included in the model.
     
-    2. observed_data: 
-    The discretized observed data in the form of panda data frame.
+    2. evidence_data: 
+    The discretized evidence data in the form of panda data frame.
     Each row is a data point.
-    The columns are the observed variables. 
+    The columns are the evidence variables. 
 Output:
     prediction:
-    The discrete category of the unobserved variable with all the other variables as evidence.
+    The predicted discrete category of the variable to predict based on the evidence.
 
 '''
-def infer_with_model(model, observed_data):
+def infer_with_model(model, evidence_data, variable_to_predict):
     return prediction
     
 '''
 Inputs:
     1. prediction:
-    The predicted categorical value of the unobserved variable.
+    The predicted categorical value.
     
     2.     
 Output:
