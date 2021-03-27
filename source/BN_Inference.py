@@ -39,5 +39,5 @@ Output:
     
 '''
 
-def categorical_prediction_to_projection(predictions):
+def categorical_prediction_to_projections(predictions):
     return projections
