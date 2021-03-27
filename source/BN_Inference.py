@@ -1,4 +1,5 @@
-
+from pgmpy.inference import VariableElimination
+import pandas as pd
 '''
 Inputs:
     1. model: 
@@ -14,23 +15,29 @@ Inputs:
     The list of variables to predict as a list of strings.
     
 Output:
-    prediction:
-    The predicted discrete category of the variable to predict based on the evidence.
+    predictions:
+    A list of dictionaries. Mapping the predicted variables to the predicted values for each row of the
+    input evidence data.
 
 '''
 def infer_with_model(model, evidence_data, to_predict):
-    return prediction
+    predictions = []
+    infer = VariableElimination(model)
+    evidences = evidence_data.to_dict(orient='records')
+    for evidence in evidences:
+        predictions.append(infer.map_query(to_predict, evidence))
+    return predictions
     
 '''
 Inputs:
-    1. prediction:
-    The predicted categorical value.
+    1. predictions:
+    A list of dictionaries mapping predicted variables to predicted categorical value.
     
     2.     
 Output:
-    1. projection:
+    1. projections:
     
 '''
 
-def categorical_prediction_to_projection(prediction):
-    return projection
+def categorical_prediction_to_projection(predictions):
+    return projections
