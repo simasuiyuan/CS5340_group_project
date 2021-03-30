@@ -107,3 +107,7 @@ if __name__ == "__main__":
     columns = [f'r_{i}' for i in range(windows)]
     df = pd.DataFrame(np.array(ls), columns=columns)
     print(df)
+
+    model_hc_bic  = bnlearn.structure_learning.fit(df, methodtype='hc', scoretype='bic')
+    G = bnlearn.plot(model_hc_bic)
+    plt.show()
