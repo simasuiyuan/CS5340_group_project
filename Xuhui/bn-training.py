@@ -109,5 +109,10 @@ if __name__ == "__main__":
     print(df)
 
     model_hc_bic  = bnlearn.structure_learning.fit(df, methodtype='hc', scoretype='bic')
-    G = bnlearn.plot(model_hc_bic)
+    # G = bnlearn.plot(model_hc_bic)
+    # plt.show()
+    model = bnlearn.import_DAG('sprinkler', CPD=False)
+    df1 = bnlearn.import_example()
+    model_update = bnlearn.parameter_learning.fit(model, df1)
+    G = bnlearn.plot(model_update)
     plt.show()
