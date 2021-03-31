@@ -116,3 +116,6 @@ if __name__ == "__main__":
     model_update = bnlearn.parameter_learning.fit(model, df1)
     G = bnlearn.plot(model_update)
     plt.show()
+
+
+
