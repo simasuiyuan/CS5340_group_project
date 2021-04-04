@@ -1,5 +1,9 @@
 import BN_Inference
-
+from ModelInterface import ModelInterface
+import pandas as pd
+import sys
+sys.path.append('../')
+from Xuhui_limin import training
 class BNModel(ModelInterface):
     def __init__(self):
         super().__init__()
@@ -8,7 +12,9 @@ class BNModel(ModelInterface):
 
     def fit(self, training_data: pd.DataFrame, **kwargs):
         #pls add the name of the variable(s) to predict to the list
-        self.model.fit(training_data)
+        # df = training.data_preparing()
+        # df = training.GMM_clustering(5, 10, df)
+        self.model = training.bn_model_training(training_data,'hc','bic')
 
     def project(self, projection_data: pd.DataFrame, **kwargs):
         predictions = infer_with_model(self.model, projection_data, self.variables_to_predict, model_type='bn_learn', output_type='dist')
@@ -16,3 +22,9 @@ class BNModel(ModelInterface):
 
     def summary(self):
         return self.model.summary()
+
+if __name__ == '__main__':
+    bn = BNModel()
+    df = training.data_preparing()
+    df = training.GMM_clustering(5, 10, df)
+    bn.fit(df)

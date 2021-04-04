@@ -10,7 +10,9 @@ import matplotlib.pyplot as plt
 from sklearn.mixture import GaussianMixture as GMM
 import bnlearn
 import networkx as nx
-from bn_learn_one_direction import new_fit
+import sys
+sys.path.append('../')
+from Xuhui_limin import bn_learn_one_direction
 
 def get_financial_time_series(symbol: str, start_date: str, end_date: str,
                               type: List[str] = ('Date','Open', 'High', 'Low', 'Close', 'Adj Close', 'Volume','LIBOR')):
@@ -29,12 +31,12 @@ def data_preparing():
     df_rt = GME_stock.dropna().reset_index(drop=True)
     return df_rt
 
-def GMM_clustering(L,df_rt):
+def GMM_clustering(L,windows,df_rt):
     def test(x):
         ls.append(x)
         print(x)
         return x[-1]
-    L = 5#4
+    L = L
     Y = df_rt['rt'].values.reshape(-1,1)
     GMM_cluster = GMM(L,covariance_type='full').fit(Y)
     df_rt['cls'] = GMM_cluster.predict(Y)
@@ -42,7 +44,7 @@ def GMM_clustering(L,df_rt):
     result_dict = df_rt.groupby('cls').agg({'rt': [np.min,np.max,np.mean]}).to_dict()
     df_rt.loc[:, 'rt_cls_mean'] = df_rt['cls'].map(result_dict[('rt', 'mean')])
     ls = []
-    windows = 10
+    windows = windows
     df_rt.loc[:,['rt_cls_mean']].rolling(window=windows,
                                 center=False).apply(test,raw=True)
 
@@ -51,7 +53,7 @@ def GMM_clustering(L,df_rt):
     return df
 
 def bn_model_training(df,method,scoring):
-    model  = new_fit(df, methodtype = 'hillclimbsearch-improve', scoretype = scoring)
+    model  = bn_learn_one_direction.new_fit(df, methodtype = 'hillclimbsearch-improve', scoretype = scoring)
     model_update = bnlearn.parameter_learning.fit(model, df)
     G = bnlearn.plot(model_update)
     plt.show()
@@ -61,7 +63,7 @@ def bn_model_training(df,method,scoring):
 
 if __name__ == '__main__':
     df = data_preparing()
-    df = GMM_clustering(4,df)
+    df = GMM_clustering(5, 10, df)
     # score choices: "bic", "k2" ,"bdeu"
     # method types: 'chow-liu','cl','hc','ex','cs','exhaustivesearch','hillclimbsearch','constraintsearch'
     model = bn_model_training(df,'hc','bic')
