@@ -17,6 +17,7 @@ class BNModel(ModelInterface):
         self.model = training.bn_model_training(training_data,'hc','bic')
 
     def project(self, projection_data: pd.DataFrame, **kwargs):
+        #Need to convert to dataframe with columns being the prices at time t
         predictions = infer_with_model(self.model, projection_data, self.variables_to_predict, model_type='bnlearn', output_type='dist')
         
 
