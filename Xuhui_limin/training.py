@@ -67,3 +67,4 @@ if __name__ == '__main__':
     # score choices: "bic", "k2" ,"bdeu"
     # method types: 'chow-liu','cl','hc','ex','cs','exhaustivesearch','hillclimbsearch','constraintsearch'
     model = bn_model_training(df,'hc','bic')
+    model = bnlearn.parameter_learning.fit(model, df)

@@ -15,6 +15,7 @@ class BNModel(ModelInterface):
         # df = training.data_preparing()
         # df = training.GMM_clustering(5, 10, df)
         self.model = training.bn_model_training(training_data,'hc','bic')
+        self.model = bn.parameter_learning.fit(self.model, df)
 
     def project(self, projection_data: pd.DataFrame, **kwargs):
         #Need to convert to dataframe with columns being the prices at time t
