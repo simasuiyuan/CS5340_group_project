@@ -11,7 +11,7 @@ class BNModel(ModelInterface):
         self.model = None
 
     def fit(self, training_data: pd.DataFrame, **kwargs):
-        #pls add the name of the variable(s) to predict to the list
+        #pls add the name of the variable(s) to predict to self.variables_to_predict
         # df = training.data_preparing()
         # df = training.GMM_clustering(5, 10, df)
         self.model = training.bn_model_training(training_data,'hc','bic')
