@@ -6,12 +6,12 @@ import pmdarima as pmd
 class ArmaModel(ModelInterface):
     def __init__(self):
         super().__init__()
-        self.model = pmd.arima.AutoARIMA(d=0)
+        self.model = pmd.arima.AutoARIMA()
         self.training_data = None
 
     def fit(self, training_data: pd.DataFrame, **kwargs):
-        self.model.fit(training_data)
-        self.training_data = training_data
+        self.model.fit(training_data["Close"])
+        self.training_data = training_data["Close"]
 
     def project(self, projection_data: pd.DataFrame, **kwargs):
         horizon = len(projection_data.index)
