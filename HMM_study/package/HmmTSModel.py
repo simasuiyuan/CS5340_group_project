@@ -9,6 +9,7 @@ from tqdm import tqdm
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.metrics import confusion_matrix
+from typing import List
 import warnings
 warnings.filterwarnings("ignore")
 
@@ -25,6 +26,24 @@ class HmmTimeSeriesModel(object):
                                n_iter=n_iter,
                                verbose=verbose)
         self.n_latency = n_latency
+        self.features = None
+        
+    def extract_stock_features(self, data: pd.DataFrame, feature_used: List):
+        feature_used = [each_string.lower() for each_string in feature_used]
+        data.columns= data.columns.str.strip().str.lower()
+        if not all(item in data.columns for item in feature_used):
+            raise ValueError(f"lack of features:{[item not in data.columns for item in feature_used]}")
+            
+        data['frac_change'] = (np.array(data['close']) - np.array(data['open'])) / np.array(data['open'])
+        data['frac_high'] = (np.array(data['high']) - np.array(data['open'])) / np.array(data['open'])
+        data['frac_low'] = (np.array(data['open']) - np.array(data['low'])) / np.array(data['open'])
+        
+        forecast_var = np.array(data['open'].shift(1))- np.array(data['open'])
+        vol_gap = np.array(data['volume'].pct_change())
+        data['forecast_var'] = forecast_var
+        data['vol_gap'] = vol_gap
+        self.features = ['frac_change','frac_high','frac_low','vol_gap']#,'forecast_var'
+        return data.dropna()
         
     def _split_train_test_data(self, data: pd.DataFrame, test_size: float):
         _train_data, _test_data = train_test_split(data, test_size=test_size, shuffle=False)
@@ -34,14 +53,19 @@ class HmmTimeSeriesModel(object):
     def fit(self, training_data: pd.DataFrame,
             split_data: bool=False, test_size: float=0.2,
             is_printed: bool=False, step: int=None):
-        self.features = list(training_data.columns)
+        
+        training_data = self.extract_stock_features(training_data,['Open', 'High', 'Low', 'Close','Volume'])
+        if self.features is None:
+            self.features = list(training_data.columns)
+            
         if split_data:
             self._split_train_test_data(training_data, test_size)
         else:
-            self._train_data = training_data
+            self._train_data = training_data.loc[:, self.features]
         
         self.outcomes_sampling(step=step)
         
+        #display(self._train_data)
         self.hmm.fit(np.array(self._train_data))
         if is_printed:
             for i in range(self.hmm.n_components):
@@ -82,7 +106,32 @@ class HmmTimeSeriesModel(object):
     def project(self, projection_data: pd.DataFrame=None, with_plot=False):
         forcast_res = []
         if projection_data is not None:
-            self.projection_data = projection_data
+            projection_data_ = self.extract_stock_features(projection_data,['Open', 'High', 'Low', 'Close','Volume'])
+            projection_data_ = projection_data_.loc[:, self.features]
+            projection_data_.columns= projection_data_.columns.str.strip().str.lower()
+            self.projection_data = projection_data_
+            projection_data.columns= projection_data.columns.str.strip().str.lower()
         for index in tqdm(range(len(self.projection_data))):
             forcast_res.append(self._get_probable_outcome(index, latency=index)[-1])
-        return forcast_res
+        self.forcast_res = forcast_res
+        predicted_frac_change, _, _, _ = np.array(list(zip(*self.forcast_res)))
+        open_price = np.array(projection_data["open"])[1:]
+        close_pred = open_price * (1 + predicted_frac_change)
+        return close_pred#,forcast_res
+    
+    def get_close(self, data, forcast_res, key_word: str="open"):
+        predicted_frac_change, _, _, _ = np.array(list(zip(*self.forcast_res)))
+        open_price = np.array(data[key_word])
+        return open_price * (1 + predicted_frac_change)
+    
+    
+#     def stock_return(self,close_price:np.ndarray):
+#         Pt_prev = np.array(close_price)[:-1]
+#         Pt = np.array(close_price)[1:]
+#         rt = 100*(np.log(Pt) - np.log(Pt_prev))
+#         rt = np.insert(rt, 0, np.nan, axis=0)
+#         return rt
+    def get_return(self, data, forcast_res, key_word: str="close_pred"):
+        if key_word != "close":
+            data[key_word] = self.get_close(data, forcast_res)
+        return data[key_word].pct_change().dropna()
