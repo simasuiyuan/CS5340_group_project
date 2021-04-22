@@ -1,0 +1,1 @@
+Place the folder `BNpkg` and file `BayesNet` under the directory `Model`
