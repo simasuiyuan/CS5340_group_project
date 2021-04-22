@@ -1,0 +1,13 @@
+# TUNABLE PARAMETERS
+
+# TEST
+"^GSPC", "2009-01-01", "2021-03-01", ["Open", "Close"]
+window_size: int = 10*253, horizon: int = 5, stride: int = 1*21
+
+# MODEL
+NUM_OF_CLS = 4
+PERIOD = 5
+threshold = -7000   # h1-tree-k2-search
+
+# PROJECTION METHOD
+N = 10   # "simulated" run of N samples
